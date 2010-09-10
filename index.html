@@ -1,0 +1,165 @@
+<!--
+nikolay * 2
+bachiyski * 2
+beau
+plinky
+foo
+bar
+sheri
+*********
+hero
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>Your Periodic Name</title>        
+        <style type="text/css" media="screen">        
+            * {
+                font-family: Helvetica, Arial, sans-serif;
+                font-weight: bold;
+                text-shadow: 1px 1px #ccc;
+            }
+            body {
+                padding: 20px;
+            }
+            #choose {
+                display: none;
+            }
+            #name {
+                padding: 8px;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            #results {
+                overflow: auto;
+                width: 100%;
+            }
+            .element {
+                
+                text-align: center;
+                font-weight: bold;
+                width: 150px;
+                height: 180px;
+                border: 3px solid black;
+                float: left;
+                padding: 10px;
+                margin: 10px 5px;
+            }
+            .n {
+                margin-top: 20px;
+                font-size: 27px;
+            }
+            .name {
+                margin-top: 10px;
+                font-size: 16px;
+            }
+            .abbr {
+                margin-top: 20px;
+                font-size: 60px;
+            }
+            .uhoh {
+                padding: 10px;
+                margin: 10px;
+                text-shadow: none;
+            }
+            .uhoh strong {
+                color: red;
+                font-size: 20px;
+            }
+            .next {
+                color: #555;
+            }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" charset="utf-8">
+        // <![CDATA[
+            jQuery(function($) {
+                var $choose = $('#choose');
+                var $name = $('#name');
+                var $results = $('#results');
+                var current_name = '';
+                var elements = null;
+                var add_element = function(e) {
+                    var html =  '<div class="element">';
+                    html += '<div class="name">'+e[1]+'</div>';
+                    html += '<div class="n">'+e[0]+'</div>';
+                    html += '<div class="abbr">'+e[2]+'</div>';
+                    html += '</div>';
+                    $results.append(html);
+                }
+                var add_variant_break = function(show_another_way_text) {
+                    $results.append('<div style="clear: both;"></div>');
+                    if (show_another_way_text) {
+                        $results.append('<div class="next">Another way to espress it:</div>');
+                    }
+                }
+                var add_nope = function(name) {
+                    if (!name) return;
+                    $results.append('<div class="uhoh">Nothing for <strong>'+name+'</strong> :(</div>');
+                }
+                var clear_elements = function() {
+                    $results.html('');
+                }
+                var find_elements_for_name = function(name) {
+                    if (!name) return [];                    
+                    var name = name.toLowerCase().replace(/\s+/g, '');
+                    var all_results = [];
+                    for(var i=0; i<elements.length; ++i) {
+                        var abbr = elements[i][2].toLowerCase();
+                        if (abbr == name) {
+                            all_results.push([elements[i]]);
+                        } else if (abbr == name.substr(0, abbr.length)) {
+                            var sub_results = find_elements_for_name(name.substr(abbr.length));
+                            if (sub_results) {
+                                for(var j=0; j<sub_results.length; ++j) {
+                                    all_results.push($.merge([elements[i]], sub_results[j]));
+                                }
+                            }
+                        }
+                    }
+                    return all_results;
+                }
+                var show_name_in_elements = function(name) {
+                    clear_elements();
+                    name_in_elements = find_elements_for_name(name);                    
+                    for(var i=0;i<name_in_elements.length;++i) {
+                        var variant = name_in_elements[i];
+                        for(var j=0; j<variant.length; ++j) {
+                            add_element(variant[j]);
+                        }
+                        add_variant_break(i != name_in_elements.length - 1);
+                    }
+                    if (!name_in_elements.length) {
+                        add_nope(name);
+                    }
+                }
+                var name_change = function(event) {
+                    var value = $name.val();
+                    if (value != current_name) {
+                        current_name = value;
+                        show_name_in_elements(current_name, elements);
+                    }
+                }
+                $.getJSON('elements.json', function(json) {
+                    elements = json;
+                    $('#loading').hide();                    
+                    $choose.show();
+                    $name.bind('keydown keyup change', name_change);
+                    $name.focus();
+                });
+            });
+        // ]]>
+        </script>
+    </head>
+    <body>
+        <p id="loading">Loading&hellip;</p>
+        <div id="choose">
+            <label for="name">Type your name:</label>
+            <input type="text" id="name" name="name" />
+            <div id="results"></div>
+            <div style="clear: both;"></div>
+        </div>
+    </body>
+</html>
