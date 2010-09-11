@@ -76,6 +76,12 @@ hero
                 text-shadow: none;
                 color: #555;
             }
+            #desc {
+                text-shadow: none;
+                font-size: 13px;
+                color: #ccc;
+                margin-left: 16px;
+            }
         </style>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" charset="utf-8">
@@ -160,9 +166,9 @@ hero
     </head>
     <body>
         <p id="loading">Loading&hellip;</p>
-        <div id="choose">
+        <div id="choose">            
             <label for="name">Type your name:</label>
-            <input type="text" id="name" name="name" />
+            <input type="text" id="name" name="name" /><span id="desc">this will try to express your name in terms of periodical table elements</span>
             <div id="results"></div>
             <div style="clear: both;"></div>
         </div>
