@@ -1,168 +1,188 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-        <title>Your Periodic Name</title>
-        <style type="text/css" media="screen">
-            * {
-                font-family: Helvetica, Arial, sans-serif;
-                font-weight: bold;
-            }
-            body {
-                padding: 20px;
-            }
-            #choose {
-                display: none;
-            }
-            #name {
-                padding: 8px;
-                font-size: 20px;
-                font-weight: bold;
-            }
-            #results {
-                overflow: auto;
-                width: 100%;
-            }
-            .element {
 
-                text-align: center;
-                font-weight: bold;
-                width: 150px;
-                height: 180px;
-                border: 3px solid black;
-                float: left;
-                padding: 10px;
-                margin: 10px 5px;
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>Your Periodic Name</title>
+    <style type="text/css" media="screen">
+        * {
+            font-family: Helvetica, Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        body {
+            padding: 20px;
+        }
+
+        #choose {
+            display: none;
+        }
+
+        #name {
+            padding: 8px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #results {
+            overflow: auto;
+            width: 100%;
+        }
+
+        .element {
+
+            text-align: center;
+            font-weight: bold;
+            width: 150px;
+            height: 180px;
+            border: 3px solid black;
+            float: left;
+            padding: 10px;
+            margin: 10px 5px;
+        }
+
+        .n {
+            margin-top: 20px;
+            font-size: 27px;
+        }
+
+        .name {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .abbr {
+            margin-top: 20px;
+            font-size: 60px;
+        }
+
+        .uhoh {
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .uhoh strong {
+            color: red;
+            font-size: 20px;
+        }
+
+        .next {
+            color: #555;
+        }
+
+        #footer {
+            font-size: 12px;
+            color: #555;
+        }
+
+        #desc {
+            font-size: 13px;
+            color: #ccc;
+            margin-left: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="loading">Loading&hellip;</p>
+    <div id="choose">
+        <label for="name">Type your name:</label>
+        <input type="text" id="name" name="name" autocomplete="off" /><span id="desc">this will try to express your name
+            in terms of periodical table elements</span>
+        <div id="results"></div>
+        <div style="clear: both;"></div>
+    </div>
+    <p id="footer">2010&mdash;
+        <script>document.write(new Date().getFullYear());</script> • Nikolay Bachiyski • The <a
+            href="https://github.com/nb/periodic-name">code</a> is on github
+    </p>
+    <script type="text/javascript" charset="utf-8">
+        let currentName = '';
+        let elements = '';
+        function nameChange(event) {
+            const value = event.target.value;
+            if (value == currentName) {
+                return;
             }
-            .n {
-                margin-top: 20px;
-                font-size: 27px;
+            currentName = value;
+            document.getElementById('results').replaceChildren(...render(currentName, findElementsForName(currentName, elements)));
+        }
+        function findElementsForName(name, elements) {
+            console.log(name);
+            if (!name) {
+                return [];
             }
-            .name {
-                margin-top: 10px;
-                font-size: 16px;
-            }
-            .abbr {
-                margin-top: 20px;
-                font-size: 60px;
-            }
-            .uhoh {
-                padding: 10px;
-                margin: 10px;
-            }
-            .uhoh strong {
-                color: red;
-                font-size: 20px;
-            }
-            .next {
-                color: #555;
-            }
-            #footer {
-                font-size: 12px;
-                color: #555;
-            }
-            #desc {
-                font-size: 13px;
-                color: #ccc;
-                margin-left: 16px;
-            }
-        </style>
-    </head>
-    <body>
-        <p id="loading">Loading&hellip;</p>
-        <div id="choose">
-            <label for="name">Type your name:</label>
-            <input type="text" id="name" name="name" autocomplete="off"/><span id="desc">this will try to express your name in terms of periodical table elements</span>
-            <div id="results"></div>
-            <div style="clear: both;"></div>
-        </div>
-        <p id="footer">2010&mdash;<script>document.write(new Date().getFullYear());</script> • Nikolay Bachiyski • The <a href="https://github.com/nb/periodic-name">code</a> is on github</p>
-        <script type="text/javascript" charset="utf-8">
-            let currentName = '';
-            let elements = '';
-            function nameChange(event) {
-                const value = event.target.value;
-                if (value == currentName) {
-                    return;
-                }
-                currentName = value;
-                document.getElementById('results').replaceChildren(...render(currentName, findElementsForName(currentName, elements)));
-            }
-            function findElementsForName(name, elements) {
-                console.log(name);
-                if (!name) {
-                    return [];
-                }
-                name = name.toLowerCase().replace(/\s+/g, '');
-                let results = [];
-                for (let element of elements) {
-                    var abbr = element[2].toLowerCase();
-                    if (abbr === name) {
-                        results.push([element]);
-                    } else if (name.startsWith(abbr)) {
-                        const subResults = findElementsForName(name.substr(abbr.length), elements);
-                        if (!subResults) {
-                            continue;
-                        }
-                        for (let sub of subResults) {
-                            results.push([element].concat(sub));
-                        }
+            name = name.toLowerCase().replace(/\s+/g, '');
+            let results = [];
+            for (let element of elements) {
+                var abbr = element[2].toLowerCase();
+                if (abbr === name) {
+                    results.push([element]);
+                } else if (name.startsWith(abbr)) {
+                    const subResults = findElementsForName(name.substr(abbr.length), elements);
+                    if (!subResults) {
+                        continue;
+                    }
+                    for (let sub of subResults) {
+                        results.push([element].concat(sub));
                     }
                 }
-                return results;
             }
-            function renderElement(element) {
-                const elementDiv = document.createElement('div');
-                elementDiv.className = 'element';
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'name';
-                nameDiv.innerHTML = element[1];
-                const nDiv = document.createElement('div');
-                nDiv.className = 'n';
-                nDiv.innerHTML = element[0];
-                const abbrDiv = document.createElement('div');
-                abbrDiv.className = 'abbr';
-                abbrDiv.innerHTML = element[2];
-                elementDiv.append(nameDiv, nDiv, abbrDiv);
-                return elementDiv;
+            return results;
+        }
+        function renderElement(element) {
+            const elementDiv = document.createElement('div');
+            elementDiv.className = 'element';
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'name';
+            nameDiv.innerHTML = element[1];
+            const nDiv = document.createElement('div');
+            nDiv.className = 'n';
+            nDiv.innerHTML = element[0];
+            const abbrDiv = document.createElement('div');
+            abbrDiv.className = 'abbr';
+            abbrDiv.innerHTML = element[2];
+            elementDiv.append(nameDiv, nDiv, abbrDiv);
+            return elementDiv;
+        }
+        function renderNoResults(name) {
+            const div = document.createElement('div');
+            div.className = 'uhoh';
+            div.innerHTML = `There isn&#8217;t a representation for <strong>${name}</strong> in periodic table elements :(`;
+            return div;
+        }
+        function render(name, results) {
+            if (!name) {
+                return '';
             }
-            function renderNoResults(name) {
-                const div = document.createElement('div');
-                div.className = 'uhoh';
-                div.innerHTML = `There isn&#8217;t a representation for <strong>${name}</strong> in periodic table elements :(`;
-                return div;
+            if (0 === results.length) {
+                return [renderNoResults(name)];
             }
-            function render(name, results) {
-                if (!name) {
-                    return '';
+            return results.map((result, i) => {
+                let renderedResult = result.map(renderElement);
+                const spacer = document.createElement('div');
+                // 2010 is calling…
+                spacer.style.clear = 'both';
+                renderedResult.push(spacer);
+                if (i !== results.length - 1) {
+                    const another = document.createElement('div');
+                    another.className = 'next';
+                    another.innerHTML = 'Another way to express it:';
+                    renderedResult.push(another);
                 }
-                if (0 === results.length) {
-                    return [renderNoResults(name)];
-                }
-                return results.map((result, i) => {
-                    let renderedResult = result.map(renderElement);
-                    const spacer = document.createElement('div');
-                    // 2010 is calling…
-                    spacer.style.clear = 'both';
-                    renderedResult.push(spacer);
-                    if (i !== results.length - 1) {
-                        const another = document.createElement('div');
-                        another.className = 'next';
-                        another.innerHTML = 'Another way to express it:';
-                        renderedResult.push(another);
-                    }
-                    return renderedResult;
-                }).flat();
+                return renderedResult;
+            }).flat();
+        }
+        fetch('elements.json').then((response) => response.json()).then((data) => {
+            elements = data;
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('choose').style.display = 'block';
+            for (let eventName of ['keydown', 'keyup', 'change']) {
+                document.getElementById('name').addEventListener(eventName, nameChange);
             }
-            fetch('elements.json').then((response) => response.json()).then((data) => {
-                elements = data;
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('choose').style.display = 'block';
-                for (let eventName of ['keydown', 'keyup', 'change']) {
-                    document.getElementById('name').addEventListener(eventName, nameChange);
-                }
-                document.getElementById('name').focus();
-            });
-            </script>
-    </body>
+            document.getElementById('name').focus();
+        });
+    </script>
+</body>
+
 </html>
