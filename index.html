@@ -14,8 +14,8 @@ hero
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-        <title>Your Periodic Name</title>        
-        <style type="text/css" media="screen">        
+        <title>Your Periodic Name</title>
+        <style type="text/css" media="screen">
             * {
                 font-family: Helvetica, Arial, sans-serif;
                 font-weight: bold;
@@ -37,7 +37,7 @@ hero
                 width: 100%;
             }
             .element {
-                
+
                 text-align: center;
                 font-weight: bold;
                 width: 150px;
@@ -114,7 +114,7 @@ hero
                     $results.html('');
                 }
                 var find_elements_for_name = function(name) {
-                    if (!name) return [];                    
+                    if (!name) return [];
                     var name = name.toLowerCase().replace(/\s+/g, '');
                     var all_results = [];
                     for(var i=0; i<elements.length; ++i) {
@@ -134,7 +134,7 @@ hero
                 }
                 var show_name_in_elements = function(name) {
                     clear_elements();
-                    name_in_elements = find_elements_for_name(name);                    
+                    name_in_elements = find_elements_for_name(name);
                     for(var i=0;i<name_in_elements.length;++i) {
                         var variant = name_in_elements[i];
                         for(var j=0; j<variant.length; ++j) {
@@ -155,7 +155,7 @@ hero
                 }
                 $.getJSON('elements.json', function(json) {
                     elements = json;
-                    $('#loading').hide();                    
+                    $('#loading').hide();
                     $choose.show();
                     $name.bind('keydown keyup change', name_change);
                     $name.focus();
@@ -166,7 +166,7 @@ hero
     </head>
     <body>
         <p id="loading">Loading&hellip;</p>
-        <div id="choose">            
+        <div id="choose">
             <label for="name">Type your name:</label>
             <input type="text" id="name" name="name" /><span id="desc">this will try to express your name in terms of periodical table elements</span>
             <div id="results"></div>
