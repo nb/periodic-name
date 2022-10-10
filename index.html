@@ -1,17 +1,5 @@
-<!--
-nikolay * 2
-bachiyski * 2
-beau
-plinky
-foo
-bar
-sheri
-*********
-hero
--->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
     <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
         <title>Your Periodic Name</title>
@@ -19,7 +7,6 @@ hero
             * {
                 font-family: Helvetica, Arial, sans-serif;
                 font-weight: bold;
-                text-shadow: 1px 1px #ccc;
             }
             body {
                 padding: 20px;
@@ -62,7 +49,6 @@ hero
             .uhoh {
                 padding: 10px;
                 margin: 10px;
-                text-shadow: none;
             }
             .uhoh strong {
                 color: red;
@@ -73,105 +59,110 @@ hero
             }
             #footer {
                 font-size: 12px;
-                text-shadow: none;
                 color: #555;
             }
             #desc {
-                text-shadow: none;
                 font-size: 13px;
                 color: #ccc;
                 margin-left: 16px;
             }
         </style>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-        <script type="text/javascript" charset="utf-8">
-        // <![CDATA[
-            jQuery(function($) {
-                var $choose = $('#choose');
-                var $name = $('#name');
-                var $results = $('#results');
-                var current_name = '';
-                var elements = null;
-                var add_element = function(e) {
-                    var html =  '<div class="element">';
-                    html += '<div class="name">'+e[1]+'</div>';
-                    html += '<div class="n">'+e[0]+'</div>';
-                    html += '<div class="abbr">'+e[2]+'</div>';
-                    html += '</div>';
-                    $results.append(html);
-                }
-                var add_variant_break = function(show_another_way_text) {
-                    $results.append('<div style="clear: both;"></div>');
-                    if (show_another_way_text) {
-                        $results.append('<div class="next">Another way to espress it:</div>');
-                    }
-                }
-                var add_nope = function(name) {
-                    if (!name) return;
-                    $results.append('<div class="uhoh">There isn&#8217;t a representastion for <strong>'+name+'</strong> in periodic table elements :(</div>');
-                }
-                var clear_elements = function() {
-                    $results.html('');
-                }
-                var find_elements_for_name = function(name) {
-                    if (!name) return [];
-                    var name = name.toLowerCase().replace(/\s+/g, '');
-                    var all_results = [];
-                    for(var i=0; i<elements.length; ++i) {
-                        var abbr = elements[i][2].toLowerCase();
-                        if (abbr == name) {
-                            all_results.push([elements[i]]);
-                        } else if (abbr == name.substr(0, abbr.length)) {
-                            var sub_results = find_elements_for_name(name.substr(abbr.length));
-                            if (sub_results) {
-                                for(var j=0; j<sub_results.length; ++j) {
-                                    all_results.push($.merge([elements[i]], sub_results[j]));
-                                }
-                            }
-                        }
-                    }
-                    return all_results;
-                }
-                var show_name_in_elements = function(name) {
-                    clear_elements();
-                    name_in_elements = find_elements_for_name(name);
-                    for(var i=0;i<name_in_elements.length;++i) {
-                        var variant = name_in_elements[i];
-                        for(var j=0; j<variant.length; ++j) {
-                            add_element(variant[j]);
-                        }
-                        add_variant_break(i != name_in_elements.length - 1);
-                    }
-                    if (!name_in_elements.length) {
-                        add_nope(name);
-                    }
-                }
-                var name_change = function(event) {
-                    var value = $name.val();
-                    if (value != current_name) {
-                        current_name = value;
-                        show_name_in_elements(current_name, elements);
-                    }
-                }
-                $.getJSON('elements.json', function(json) {
-                    elements = json;
-                    $('#loading').hide();
-                    $choose.show();
-                    $name.bind('keydown keyup change', name_change);
-                    $name.focus();
-                });
-            });
-        // ]]>
-        </script>
     </head>
     <body>
         <p id="loading">Loading&hellip;</p>
         <div id="choose">
             <label for="name">Type your name:</label>
-            <input type="text" id="name" name="name" /><span id="desc">this will try to express your name in terms of periodical table elements</span>
+            <input type="text" id="name" name="name" autocomplete="off"/><span id="desc">this will try to express your name in terms of periodical table elements</span>
             <div id="results"></div>
             <div style="clear: both;"></div>
         </div>
-        <p id="footer">2010 • Nikolay Bachiyski • The <a href="http://github.com/nb/periodic-name">code</a> is at github</p>
+        <p id="footer">2010&mdash;<script>document.write(new Date().getFullYear());</script> • Nikolay Bachiyski • The <a href="https://github.com/nb/periodic-name">code</a> is on github</p>
+        <script type="text/javascript" charset="utf-8">
+            let currentName = '';
+            let elements = '';
+            function nameChange(event) {
+                const value = event.target.value;
+                if (value == currentName) {
+                    return;
+                }
+                currentName = value;
+                document.getElementById('results').replaceChildren(...render(currentName, findElementsForName(currentName, elements)));
+            }
+            function findElementsForName(name, elements) {
+                console.log(name);
+                if (!name) {
+                    return [];
+                }
+                name = name.toLowerCase().replace(/\s+/g, '');
+                let results = [];
+                for (let element of elements) {
+                    var abbr = element[2].toLowerCase();
+                    if (abbr === name) {
+                        results.push([element]);
+                    } else if (name.startsWith(abbr)) {
+                        const subResults = findElementsForName(name.substr(abbr.length), elements);
+                        if (!subResults) {
+                            continue;
+                        }
+                        for (let sub of subResults) {
+                            results.push([element].concat(sub));
+                        }
+                    }
+                }
+                return results;
+            }
+            function renderElement(element) {
+                const elementDiv = document.createElement('div');
+                elementDiv.className = 'element';
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'name';
+                nameDiv.innerHTML = element[1];
+                const nDiv = document.createElement('div');
+                nDiv.className = 'n';
+                nDiv.innerHTML = element[0];
+                const abbrDiv = document.createElement('div');
+                abbrDiv.className = 'abbr';
+                abbrDiv.innerHTML = element[2];
+                elementDiv.append(nameDiv, nDiv, abbrDiv);
+                return elementDiv;
+            }
+            function renderNoResults(name) {
+                const div = document.createElement('div');
+                div.className = 'uhoh';
+                div.innerHTML = `There isn&#8217;t a representation for <strong>${name}</strong> in periodic table elements :(`;
+                return div;
+            }
+            function render(name, results) {
+                if (!name) {
+                    return '';
+                }
+                if (0 === results.length) {
+                    return [renderNoResults(name)];
+                }
+                return results.map((result, i) => {
+                    let renderedResult = result.map(renderElement);
+                    const spacer = document.createElement('div');
+                    // 2010 is calling…
+                    spacer.style.clear = 'both';
+                    renderedResult.push(spacer);
+                    if (i !== results.length - 1) {
+                        const another = document.createElement('div');
+                        another.className = 'next';
+                        another.innerHTML = 'Another way to express it:';
+                        renderedResult.push(another);
+                    }
+                    return renderedResult;
+                }).flat();
+            }
+            fetch('elements.json').then((response) => response.json()).then((data) => {
+                elements = data;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('choose').style.display = 'block';
+                for (let eventName of ['keydown', 'keyup', 'change']) {
+                    document.getElementById('name').addEventListener(eventName, nameChange);
+                }
+                document.getElementById('name').focus();
+            });
+            </script>
     </body>
 </html>
