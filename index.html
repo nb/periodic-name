@@ -99,6 +99,16 @@
     <script type="text/javascript" charset="utf-8">
         let currentName = '';
         let elements = '';
+        function createDOMElement(tag, className, innerHTML) {
+            const element = document.createElement(tag);
+            if (className) {
+                element.className = className;
+            }
+            if (innerHTML) {
+                element.innerHTML = innerHTML;
+            }
+            return element;
+        }
         function nameChange(event) {
             const value = event.target.value;
             if (value == currentName) {
@@ -131,25 +141,15 @@
             return results;
         }
         function renderElement(element) {
-            const elementDiv = document.createElement('div');
-            elementDiv.className = 'element';
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'name';
-            nameDiv.innerHTML = element[1];
-            const nDiv = document.createElement('div');
-            nDiv.className = 'n';
-            nDiv.innerHTML = element[0];
-            const abbrDiv = document.createElement('div');
-            abbrDiv.className = 'abbr';
-            abbrDiv.innerHTML = element[2];
+            const elementDiv = createDOMElement('div', 'element');
+            const nameDiv = createDOMElement('div', 'name', element[1]);
+            const nDiv = createDOMElement('div', 'n', element[0]);
+            const abbrDiv = createDOMElement('div', 'abbr', element[2]);
             elementDiv.append(nameDiv, nDiv, abbrDiv);
             return elementDiv;
         }
         function renderNoResults(name) {
-            const div = document.createElement('div');
-            div.className = 'uhoh';
-            div.innerHTML = `There isn&#8217;t a representation for <strong>${name}</strong> in periodic table elements :(`;
-            return div;
+            return createDOMElement('div', 'uhoh', `There isn&#8217;t a representation for <strong>${name}</strong> in periodic table elements :(`);
         }
         function render(name, results) {
             if (!name) {
@@ -160,15 +160,12 @@
             }
             return results.map((result, i) => {
                 let renderedResult = result.map(renderElement);
-                const spacer = document.createElement('div');
+                const spacer = createDOMElement('div');
                 // 2010 is calling…
                 spacer.style.clear = 'both';
                 renderedResult.push(spacer);
                 if (i !== results.length - 1) {
-                    const another = document.createElement('div');
-                    another.className = 'next';
-                    another.innerHTML = 'Another way to express it:';
-                    renderedResult.push(another);
+                    renderedResult.push(createDOMElement('div', 'next', 'Another way to express it:'));
                 }
                 return renderedResult;
             }).flat();
